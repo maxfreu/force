@@ -51,11 +51,15 @@ typedef struct {
   int tnx, tny, tnc;  // number of tiles (square extent)
   int *tx, *ty, tn;   // allow-listed tiles
   double tilesize;     // tile size in desination unit
+  double tilesize_x;   // horizontal size in desination unit
+  double tilesize_y;   // tile size in desination unit
   double chunksize;    // vertical chunk size in destination unit
+  double chunksize_x;  // horizontal chunk size in destination unit
+  double chunksize_y;  // vertical chunk size in destination unit
   double res;          // spatial resolution
   int nx, ny, nc;     // number of pixels in tile
   int cx, cy, cc;     // number of pixels in chunk
-  int cn;             // number of chunks in tile
+  int cn, cnx, cny;   // number of chunks in tile
   coord_t origin_geo; // origin of grid, geographic
   coord_t origin_map; // origin of grid, destination projection
   char proj[NPOW_10];   // destination projection

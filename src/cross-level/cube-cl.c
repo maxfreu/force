@@ -112,7 +112,11 @@ void init_datacube(cube_t *cube){
   cube->origin_map.x = 0;
   cube->origin_map.y = 0;
   cube->tilesize     = 0;
+  cube->tilesize_x   = 0;
+  cube->tilesize_y   = 0;
   cube->chunksize    = 0;
+  cube->chunksize_x  = 0;
+  cube->chunksize_y  = 0;
   cube->res          = 0;
   cube->nx           = 0;
   cube->ny           = 0;
@@ -121,6 +125,8 @@ void init_datacube(cube_t *cube){
   cube->cy           = 0;
   cube->cc           = 0;
   cube->cn           = 0;
+  cube->cnx          = 0;
+  cube->cny          = 0;
   cube->tminx        = 0;
   cube->tmaxx        = 0;
   cube->tminy        = 0;
@@ -172,6 +178,8 @@ void print_datacube(cube_t *cube){
   printf("Tiles X%04d to X%04d\n", cube->tminx, cube->tmaxx);
   printf("Tiles Y%04d to Y%04d\n", cube->tminy, cube->tmaxy);
   printf("Chunk size: %.2f\n", cube->chunksize);
+  printf("Chunk size x: %.2f\n", cube->chunksize_x);
+  printf("Chunk size y: %.2f\n", cube->chunksize_y);
   printf("Chunk pixels: %d x %d = %d\n", cube->cx, cube->cy, cube->cc);
   printf("Number of chunks per tile: %d\n", cube->cn);
   printf("Number of tiles (x): %d\n", cube->tnx);
@@ -246,16 +254,16 @@ double tol = 5e-3;
 
   // resolution
   cube->res = res;
-  
 
   // number of pixels in tile
-  cube->nx = cube->ny = (int)(cube->tilesize/cube->res);
-  cube->nc = cube->nx*cube->ny;
+  cube->nx = (int)(cube->tilesize_x / cube->res);
+  cube->ny = (int)(cube->tilesize_y / cube->res);
+  cube->nc = cube->nx * cube->ny;
 
   // number of pixels in chunk
-  cube->cx = (int)(cube->chunksize/cube->res);
-  cube->cy = (int)(cube->chunksize/cube->res);
-  cube->cc = cube->cx*cube->cy;
+  cube->cx = (int)(cube->chunksize_x / cube->res);
+  cube->cy = (int)(cube->chunksize_y / cube->res);
+  cube->cc = cube->cx * cube->cy;
   
   return;
 }
@@ -294,6 +302,8 @@ FILE *fp = NULL;
     fprintf(fp, "%f\n", cube->origin_map.y);
     fprintf(fp, "%f\n", cube->tilesize);
     fprintf(fp, "%f\n", cube->chunksize);
+    fprintf(fp, "%f\n", cube->chunksize_x);
+    fprintf(fp, "%f\n", cube->chunksize_y);
 
     fclose(fp);
 
@@ -390,9 +400,29 @@ FILE *fp = NULL;
     //printf("%s %f\n", buffer, cube->chunksize);
   }
 
+  if (fgets(buffer, NPOW_10, fp) == NULL){
+    printf("Unable to read chunk x size. ");
+    free_datacube(cube); return NULL;
+  } else {
+    buffer[strcspn(buffer, "\r\n#")] = 0;
+    cube->chunksize_x = atof(buffer);
+    //printf("%s %f\n", buffer, cube->chunksize);
+  }
+
+  if (fgets(buffer, NPOW_10, fp) == NULL){
+    printf("Unable to read chunk y size. ");
+    free_datacube(cube); return NULL;
+  } else {
+    buffer[strcspn(buffer, "\r\n#")] = 0;
+    cube->chunksize_y = atof(buffer);
+    //printf("%s %f\n", buffer, cube->chunksize);
+  }
+
   fclose(fp);
 
-  cube->cn = (int)((cube->tilesize * cube->tilesize) / (cube->chunksize * cube->chunksize));
+  cube->tilesize_x = cube->tilesize;
+  cube->tilesize_y = cube->tilesize;
+  cube->cn = (int)((cube->tilesize_x * cube->tilesize_y) / (cube->chunksize_x * cube->chunksize_y));
 
   #ifdef FORCE_DEBUG
   print_datacube(cube);
@@ -426,8 +456,13 @@ double tol = 5e-3;
       return NULL;
     }
    
-    cube->cn = (int)(cube->tilesize/blockoverride);
-    cube->chunksize = cube->tilesize/cube->cn;
+    cube->cn = (int)(cube->tilesize / blockoverride);
+    cube->chunksize = cube->tilesize / cube->cn;
+
+    cube->cnx = (int)(cube->tilesize_x / blockoverride);
+    cube->cny = (int)(cube->tilesize_y / blockoverride);
+    cube->chunksize_x = cube->tilesize / cube->cnx;
+    cube->chunksize_y = cube->tilesize / cube->cny;
   }
 
   copy_string(cube->dname, NPOW_10, d_write);

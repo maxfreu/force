@@ -1057,19 +1057,19 @@ double tol = 5e-3;
   //CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
   //CPLPushErrorHandler(CPLQuietErrorHandler);
 
-  width  = cube->chunksize;
-  height = cube->chunksize;
-  x_offset = fmod(chunk * cube->chunksize, cube->tilesize); //chunksize x, tilesize x
-  y_offset = floor(chunk * cube->chunksize / cube->tilesize) * cube->chunksize; //chunksize x, tilesize x, chunksize y
+  width  = cube->chunksize_x;
+  height = cube->chunksize_y;
+  x_offset =  fmod(chunk * width,  cube->tilesize_x);
+  y_offset = floor(chunk * width / cube->tilesize_x) * cube->chunksize_y;
 
   if (fabs(partial_x) > tol){
     width = fabs(partial_x);
-    if (partial_x < 0) x_offset = x_offset+cube->chunksize+partial_x;
+    if (partial_x < 0) x_offset = x_offset+cube->chunksize_x+partial_x;
   }
   
   if (fabs(partial_y) > tol){
     height = fabs(partial_y);
-    if (partial_y < 0) y_offset = y_offset+cube->chunksize+partial_y;
+    if (partial_y < 0) y_offset = y_offset+cube->chunksize_y+partial_y;
   }
 
 
