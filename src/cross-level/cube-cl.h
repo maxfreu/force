@@ -51,7 +51,7 @@ typedef struct {
   int tnx, tny, tnc;  // number of tiles (square extent)
   int *tx, *ty, tn;   // allow-listed tiles
   double tilesize;     // tile size in desination unit
-  double chunksize;    // vertical chunk size
+  double chunksize;    // vertical chunk size in destination unit
   double res;          // spatial resolution
   int nx, ny, nc;     // number of pixels in tile
   int cx, cy, cc;     // number of pixels in chunk

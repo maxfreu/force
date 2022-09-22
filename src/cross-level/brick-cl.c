@@ -822,6 +822,7 @@ int i = 0;
       printf("Unable to lock file %s (timeout: %fs, nx/ny: %d/%d). ", fname, timeout, brick->nx, brick->ny);
       return FAILURE;}
 
+    brick->open = OPEN_BLOCK;
 
     // mosaicking into existing file
     // read and rewrite brick (safer when using compression)
@@ -907,8 +908,8 @@ int i = 0;
       }
       nx_write     = brick->cx;
       ny_write     = brick->cy;
-      xoff_write   = 0;
-      yoff_write   = brick->chunk*brick->cy;
+      xoff_write   = (brick->chunk * brick->cx) % brick->nx;
+      yoff_write   = (int)(floor(brick->chunk * brick->cx / brick->nx) * brick->cy);
     } else {
       nx_write     = brick->nx;
       ny_write     = brick->ny;

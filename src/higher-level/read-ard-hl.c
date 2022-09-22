@@ -355,6 +355,7 @@ int nchar;
          strcmp(ext, ".bsq") == 0 ||
          strcmp(ext, ".bil") == 0 ||
          strcmp(ext, ".tif") == 0 ||
+         strcmp(ext, ".cog") == 0 ||
          strcmp(ext, ".vrt") == 0) &&
         (strstr(d.LIST[t]->d_name, "BOA")  != NULL ||
          strstr(d.LIST[t]->d_name, "TOA")  != NULL ||
@@ -1056,14 +1057,14 @@ double tol = 5e-3;
   //CPLSetConfigOption("GDAL_PAM_ENABLED", "NO");
   //CPLPushErrorHandler(CPLQuietErrorHandler);
 
-  width  = cube->tilesize;
+  width  = cube->chunksize;
   height = cube->chunksize;
-  x_offset = 0;
-  y_offset = chunk*cube->chunksize;
+  x_offset = fmod(chunk * cube->chunksize, cube->tilesize); //chunksize x, tilesize x
+  y_offset = floor(chunk * cube->chunksize / cube->tilesize) * cube->chunksize; //chunksize x, tilesize x, chunksize y
 
   if (fabs(partial_x) > tol){
     width = fabs(partial_x);
-    if (partial_x < 0) x_offset = cube->tilesize+partial_x;
+    if (partial_x < 0) x_offset = x_offset+cube->chunksize+partial_x;
   }
   
   if (fabs(partial_y) > tol){
@@ -1102,11 +1103,9 @@ double tol = 5e-3;
     return NULL;
   }
   
-  nx = (int)(width/cube->res);
-  ny = (int)(height/cube->res);
+  nx = (int)(width  / cube->res);
+  ny = (int)(height / cube->res);
   nc = nx*ny;
-
-  
 
   if (ard_type == _ARD_REF_){
     for (b=0; b<sen->nb; b++){

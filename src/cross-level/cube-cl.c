@@ -253,7 +253,7 @@ double tol = 5e-3;
   cube->nc = cube->nx*cube->ny;
 
   // number of pixels in chunk
-  cube->cx = cube->nx;
+  cube->cx = (int)(cube->chunksize/cube->res);
   cube->cy = (int)(cube->chunksize/cube->res);
   cube->cc = cube->cx*cube->cy;
   
@@ -392,7 +392,7 @@ FILE *fp = NULL;
 
   fclose(fp);
 
-  cube->cn = (int)(cube->tilesize/cube->chunksize);
+  cube->cn = (int)((cube->tilesize * cube->tilesize) / (cube->chunksize * cube->chunksize));
 
   #ifdef FORCE_DEBUG
   print_datacube(cube);
@@ -414,8 +414,9 @@ cube_t *copy_datacube_def(char *d_read, char *d_write, double blockoverride){
 cube_t *cube = NULL;
 double tol = 5e-3;
 
-
-  if ((cube = read_datacube_def(d_read)) == NULL){
+  cube = read_datacube_def(d_read);
+  
+  if (cube == NULL){
     printf("Reading datacube definition failed. "); return NULL;}
 
   if (blockoverride > 0){
@@ -427,7 +428,6 @@ double tol = 5e-3;
    
     cube->cn = (int)(cube->tilesize/blockoverride);
     cube->chunksize = cube->tilesize/cube->cn;
-
   }
 
   copy_string(cube->dname, NPOW_10, d_write);
