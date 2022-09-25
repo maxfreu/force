@@ -422,7 +422,10 @@ FILE *fp = NULL;
 
   cube->tilesize_x = cube->tilesize;
   cube->tilesize_y = cube->tilesize;
-  cube->cn = (int)((cube->tilesize_x * cube->tilesize_y) / (cube->chunksize_x * cube->chunksize_y));
+
+  cube->cnx = (int)(cube->tilesize_x / cube->chunksize_x);
+  cube->cny = (int)(cube->tilesize_y / cube->chunksize_y);
+  cube->cn = cube->cnx * cube->cny;
 
   #ifdef FORCE_DEBUG
   print_datacube(cube);

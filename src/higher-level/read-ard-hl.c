@@ -1060,7 +1060,7 @@ double tol = 5e-3;
   width  = cube->chunksize_x;
   height = cube->chunksize_y;
   x_offset =  fmod(chunk * width,  cube->tilesize_x);
-  y_offset = floor(chunk * width / cube->tilesize_x) * cube->chunksize_y;
+  y_offset = floor(chunk * width / cube->tilesize_x) * height;
 
   if (fabs(partial_x) > tol){
     width = fabs(partial_x);
